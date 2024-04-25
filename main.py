@@ -80,18 +80,62 @@ planet_candidates = data[data['koi_pdisposition'] == "CANDIDATE"]
 
 
 
-#Task 2.4.2c
-tvr = planet_candidates[['koi_srad', 'koi_srad_err1', 'koi_srad_err2', 'koi_steff', 'koi_steff_err1', 'koi_steff_err2']]
+# #Task 2.4.2c
+# tvr = planet_candidates[['koi_srad', 'koi_srad_err1', 'koi_srad_err2', 'koi_steff', 'koi_steff_err1', 'koi_steff_err2']]
 
-#convert all units to relative solar quantity for better visibility
-tvr['koi_steff'] = tvr['koi_steff'] / SOLAR_TEMP
-tvr['koi_steff_err1'] = tvr['koi_steff_err1'] / SOLAR_TEMP
-tvr['koi_steff_err2'] = tvr['koi_steff_err2'] / SOLAR_TEMP * -1
+# #convert all units to relative solar quantity for better visibility
+# tvr['koi_steff'] = tvr['koi_steff'] / SOLAR_TEMP
+# tvr['koi_steff_err1'] = tvr['koi_steff_err1'] / SOLAR_TEMP
+# tvr['koi_steff_err2'] = tvr['koi_steff_err2'] / SOLAR_TEMP * -1
 
-tvr['koi_srad_err2'] = -1 * tvr['koi_srad_err2']
+# tvr['koi_srad_err2'] = -1 * tvr['koi_srad_err2']
 
-plt.errorbar(tvr['koi_srad'], tvr['koi_steff'], xerr=[tvr['koi_srad_err1'], tvr['koi_srad_err2']], yerr=[tvr['koi_steff_err1'], tvr['koi_steff_err2']], fmt='o', capsize=5)
-plt.xlabel('Stellar Radius')
-plt.ylabel('Stellar Temperature')
-plt.title('Graph of Stellar Temperature against Stellar Radius')
+# # plt.errorbar(tvr['koi_srad'], tvr['koi_steff'], xerr=[tvr['koi_srad_err1'], tvr['koi_srad_err2']], yerr=[tvr['koi_steff_err1'], tvr['koi_steff_err2']], fmt='o', capsize=5)
+# plt.scatter((tvr['koi_srad'])**4, (tvr['koi_steff'])**-2, marker='.')
+# plt.xlabel('Stellar Radius')
+# plt.ylabel('Stellar Temperature')
+# plt.xscale('log')
+# plt.yscale('log')
+# plt.title('Graph of Stellar Temperature against Stellar Radius')
+# plt.show()
+
+
+
+
+gvr = planet_candidates[['koi_slogg', 'koi_slogg_err1', 'koi_slogg_err2', 'koi_srad', 'koi_srad_err1', 'koi_srad_err2']]
+#convert surface gravity (log(cm/s^2)) to si units by raising to the power of 10 (cm/s^2) and divide by 100 (m/s^2)
+gvr['koi_sg'] = np.power(10, gvr['koi_slogg']) / 100
+gvr['koi_sg_err1'] = np.power(10, gvr['koi_slogg_err1']) / 100 
+gvr['koi_sg_err2'] = np.power(10, gvr['koi_slogg_err2']) / 100 * -1
+gvr['koi_rad'] = gvr['koi_srad'] * SOLAR_RADIUS
+gvr['koi_rad_err1'] = gvr['koi_srad_err1'] * SOLAR_RADIUS
+gvr['koi_rad_err2'] = gvr['koi_srad_err2'] * SOLAR_RADIUS * -1
+plt.errorbar(gvr['koi_sg'], gvr['koi_rad'], xerr=[gvr['koi_sg_err1'], gvr['koi_sg_err2']], yerr=[gvr['koi_rad_err1'], gvr['koi_     rad_err2']], fmt='o', capsize=5)
+# plt.scatter((gvr['koi_srad'])**4, (gvr['koi_steff'])**-2, marker='.')
+plt.xlabel('Stellar Surface Gravity')
+plt.ylabel('Stellar Radius')
+# plt.xscale('log')
+# plt.yscale('log')
+plt.title('Graph of Surface Gravity against Stellar Radius')
 plt.show()
+
+
+
+
+# #Task 2.4.3
+# #t^2=4pia^3/G(m+M)
+# def get_sma(period, mass_star):
+#     return ((G * (mass_star) / (4 * np.pi**2) * period**2) ** 1/3 / 1.49597870700e11)
+
+# task243 = planet_candidates[['kepoi_name', 'koi_period', 'koi_period_err1', 'koi_period_err2',  'koi_smass', 'koi_smass_err1', 'koi_smass_err2', ]]
+
+# #units
+# task243['koi_period'] = task243['koi_period'] * 86400
+# task243['koi_period_err1'] = task243['koi_period_err1'] * 86400
+# task243['koi_period_err2'] = task243['koi_period_err2'] * 86400
+# task243['koi_smass'] = task243['koi_smass'] * SOLAR_MASS
+# task243['koi_smass_err1'] = task243['koi_smass_err1'] * SOLAR_MASS
+# task243['koi_smass_err2'] = task243['koi_smass_err2'] * SOLAR_MASS
+# task243['planet_sma'] = get_sma(task243['koi_period'], task243['koi_smass'])  #astronomical unit
+# task243['abs_unc_sma'] = (((task243['koi_smass_err1'] - task243['koi_smass_err2']) / 2 / task243['koi_smass']) + 2 * ((task243['koi_period_err1'] - task243['koi_period_err2']) / 2 / task243['koi_period'])) * task243['planet_sma']
+# task243.to_csv('task243final.csv', index=False)
